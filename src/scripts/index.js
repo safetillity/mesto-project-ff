@@ -1,3 +1,6 @@
+import '../pages/index.css'
+import {initialCards} from "../scripts/cards.js"
+
 const cardTemplate = document.querySelector('#card-template').content
 function createCard(cardContent, removeCard) {
 	const cardElement = cardTemplate.cloneNode(true)
@@ -20,7 +23,6 @@ function removeCard(event) {
 }
 
 const cardList = document.querySelector('.places__list')
-
 initialCards.forEach(cardContent => {
 	const cardElement = createCard(cardContent, removeCard)
 	cardList.append(cardElement)
