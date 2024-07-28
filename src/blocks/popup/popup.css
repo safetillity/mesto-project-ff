@@ -21,3 +21,8 @@
   right: 0;
   z-index: 10;
 }
+
+.popup__error_element{
+    color: #ff0000;
+    font-size: 12px;
+}

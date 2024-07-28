@@ -1,8 +1,17 @@
 import '../pages/index.css'
 import { initialCards } from '../components/cards.js'
 import { createCard, removeCard, likeCard } from '../components/cardFunc.js'
+import { clearValidation, enableValidation } from '../components/validation.js'
+import { closePopup, openPopup } from '../components/modal.js'
 
-import { closePopup, openPopup, closePopupByEsc } from '../components/modal.js'
+const validationConfig = {
+	formSelector: '.popup__form',
+	inputSelector: '.popup__input',
+	submitButtonSelector: '.popup__button',
+	inactiveButtonClass: 'popup__button_disabled',
+	inputErrorClass: 'popup__input_type_error',
+	errorClass: 'popup__error_visible',
+}
 
 const editButton = document.querySelector('.profile__edit-button')
 const addButton = document.querySelector('.profile__add-button')
@@ -34,6 +43,7 @@ initialCards.forEach(cardContent => {
 
 editButton.addEventListener('click', function () {
 	openPopup(popupEdit)
+	clearValidation(editForm, validationConfig)
 	nameInput.value = profileTitle.textContent
 	jobInput.value = profileDescription.textContent
 })
@@ -69,6 +79,7 @@ function editProfile(evt) {
 
 	profileTitle.textContent = newName
 	profileDescription.textContent = newJob
+	clearValidation(editForm, validationConfig)
 	closePopup(popupEdit)
 }
 
@@ -86,6 +97,8 @@ function addCard(evt) {
 	const cardElement = createCard(newCard, removeCard, openImagePopup, likeCard)
 	cardList.prepend(cardElement)
 	closePopup(popupNewCard)
-	addForm.reset()
+	clearValidation(addForm, validationConfig)
 }
 addForm.addEventListener('submit', addCard)
+
+enableValidation(validationConfig)
