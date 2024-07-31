@@ -41,11 +41,11 @@ const checkInputValidity = (inputElement, validationConfig) => {
 	return true
 }
 
-  function hasInvalidInput(inputList) {
+function hasInvalidInput(inputList) {
 	return inputList.some(inputElement => !inputElement.validity.valid)
 }
 
-  const toggleButtonState = (
+const toggleButtonState = (
 	hasInvalidInput,
 	inputList,
 	buttonElement,
@@ -60,7 +60,7 @@ const checkInputValidity = (inputElement, validationConfig) => {
 	}
 }
 
-  const setEventListeners = (formElement, validationConfig) => {
+const setEventListeners = (formElement, validationConfig) => {
 	const inputList = Array.from(
 		formElement.querySelectorAll(validationConfig.inputSelector)
 	)
@@ -86,9 +86,10 @@ export const enableValidation = validationConfig => {
 	const formList = Array.from(
 		document.querySelectorAll(validationConfig.formSelector)
 	)
+
 	formList.forEach(formElement => {
-		formElement.addEventListener('submit', evt => {
-			evt.preventDefault()
+		formElement.addEventListener('submit', event => {
+			event.preventDefault()
 		})
 		setEventListeners(formElement, validationConfig)
 	})
@@ -98,13 +99,14 @@ export const clearValidation = (formElement, validationConfig) => {
 	const inputList = Array.from(
 		formElement.querySelectorAll(validationConfig.inputSelector)
 	)
+
 	const buttonElement = formElement.querySelector(
 		validationConfig.submitButtonSelector
 	)
 
-	inputList.forEach(inputElement =>
+	inputList.forEach(inputElement => {
 		hideInputError(inputElement, validationConfig)
-	)
+	})
 
 	toggleButtonState(() => true, inputList, buttonElement, validationConfig)
-} 
+}
