@@ -84,7 +84,6 @@ export function patchAvatar(avatar) {
 }
 
 export function renderLoading(isLoading, submitButton) {
-
 	if (isLoading) {
 		submitButton.textContent = 'Сохранение...'
 	} else {

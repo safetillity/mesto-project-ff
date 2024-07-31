@@ -8,7 +8,7 @@ import {
 	patchProfile,
 	postCards,
 	patchAvatar,
-	renderLoading
+	renderLoading,
 } from '../components/api.js'
 
 const validationConfig = {
@@ -42,7 +42,6 @@ const popupAvatar = document.querySelector('.popup_type_new-avatar')
 const avatarForm = popupAvatar.querySelector('.popup__form')
 const avatarUrlInput = avatarForm.querySelector('.popup__input_type_url')
 
-
 getCards()
 	.then(cardList =>
 		cardList.forEach(cardContent => {
@@ -75,8 +74,8 @@ function openImagePopup(cardContent) {
 }
 
 function editProfile(event) {
-		const submitButton = event.target.querySelector('.popup__button')
-		renderLoading(true, submitButton)
+	const submitButton = event.target.querySelector('.popup__button')
+	renderLoading(true, submitButton)
 	profileTitle.textContent = nameInput.value
 	profileDescription.textContent = jobInput.value
 	patchProfile(profileTitle.textContent, profileDescription.textContent)
@@ -90,8 +89,8 @@ function editProfile(event) {
 }
 
 function addCard(event) {
-		const submitButton = event.target.querySelector('.popup__button')
-		renderLoading(true, submitButton)
+	const submitButton = event.target.querySelector('.popup__button')
+	renderLoading(true, submitButton)
 
 	postCards(cardNameInput.value, cardUrlInput.value)
 		.then(cardContent => {
@@ -110,7 +109,6 @@ function addCard(event) {
 			console.error(`ошибка при загрузки данных пользователя : ${error}`)
 		)
 		.finally(() => renderLoading(false, submitButton))
-
 }
 
 function editAvatar() {
@@ -158,6 +156,3 @@ enableValidation(validationConfig)
 profileForm.addEventListener('submit', editProfile)
 addForm.addEventListener('submit', addCard)
 avatarForm.addEventListener('submit', editAvatar)
-
-
-
