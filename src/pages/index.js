@@ -1,14 +1,17 @@
 import '../pages/index.css'
 import { createCard, removeCard, likeCard } from '../components/cards.js'
 import { clearValidation, enableValidation } from '../components/validation.js'
-import { closePopup, openPopup } from '../components/modal.js'
+import {
+	closePopup,
+	openPopup,
+	closePopupByOverlay,
+} from '../components/modal.js'
 import {
 	getCards,
 	getUserInfo,
 	patchProfile,
 	postCards,
 	patchAvatar,
-	renderLoading,
 } from '../components/api.js'
 
 const validationConfig = {
@@ -41,36 +44,39 @@ const cardUrlInput = addForm.querySelector('.popup__input_type_url')
 const popupAvatar = document.querySelector('.popup_type_new-avatar')
 const avatarForm = popupAvatar.querySelector('.popup__form')
 const avatarUrlInput = avatarForm.querySelector('.popup__input_type_url')
+const popups = document.querySelectorAll('.popup')
 
-getCards()
-	.then(cardList =>
-		cardList.forEach(cardContent => {
-			const cardElement = createCard(
-				cardContent,
-				removeCard,
-				openImagePopup,
-				likeCard
-			)
-			placesList.append(cardElement)
-		})
-	)
-	.catch(error => console.error(`ошибка при загрузки карточек : ${error}`))
-
-getUserInfo()
-	.then(userInfo => {
+Promise.all([getUserInfo(), getCards()])
+	.then(([userInfo, cardList]) => {
 		profileTitle.textContent = userInfo.name
 		profileDescription.textContent = userInfo.about
 		profileAvatar.style.backgroundImage = `url(\\${userInfo.avatar})`
+
+		cardList.forEach(cardContent => {
+			const cardElement = createCard({
+				cardContent,
+				removeCard,
+				openImagePopup,
+				likeCard,
+			})
+			placesList.append(cardElement)
+		})
 	})
-	.catch(error =>
-		console.error(`ошибка при загрузки данных пользователя : ${error}`)
-	)
+	.catch(error => console.error(`ошибка при загрузки данных : ${error}`))
 
 function openImagePopup(cardContent) {
 	popupImagePicture.src = cardContent.link
 	popupImagePicture.alt = cardContent.name
 	popupCaption.textContent = cardContent.name
 	openPopup(popupImage)
+}
+
+function renderLoading(isLoading, submitButton) {
+	if (isLoading) {
+		submitButton.textContent = 'Сохранение...'
+	} else {
+		submitButton.textContent = 'Cохранить'
+	}
 }
 
 function editProfile(event) {
@@ -87,22 +93,20 @@ function editProfile(event) {
 		)
 		.finally(() => renderLoading(false, submitButton))
 }
-
 function addCard(event) {
 	const submitButton = event.target.querySelector('.popup__button')
 	renderLoading(true, submitButton)
-
 	postCards(cardNameInput.value, cardUrlInput.value)
 		.then(cardContent => {
-			const cardElement = createCard(
+			const cardElement = createCard({
 				cardContent,
 				removeCard,
 				openImagePopup,
-				likeCard
-			)
+				likeCard,
+			})
 			placesList.prepend(cardElement)
+
 			closePopup(popupNewCard)
-			addForm.reset()
 			clearValidation(addForm, validationConfig)
 		})
 		.catch(error =>
@@ -111,17 +115,18 @@ function addCard(event) {
 		.finally(() => renderLoading(false, submitButton))
 }
 
-function editAvatar() {
+function editAvatar(event) {
+	const submitButton = event.target.querySelector('.popup__button')
+	renderLoading(true, submitButton)
 	patchAvatar(avatarUrlInput.value)
 		.then(userInfo => {
 			profileAvatar.style.backgroundImage = `url(\\${userInfo.avatar})`
-		})
-		.then(() => {
 			closePopup(popupAvatar)
 		})
 		.catch(error =>
 			console.error(`ошибка при загрузки данных пользователя : ${error}`)
 		)
+		.finally(() => renderLoading(false, submitButton))
 }
 
 editButton.addEventListener('click', function () {
@@ -146,13 +151,10 @@ profileAvatar.addEventListener('click', function () {
 	openPopup(popupAvatar)
 })
 
-document.addEventListener('click', function (event) {
-	if (event.target.classList.contains('popup')) {
-		closePopup(event.target)
-	}
-})
-
 enableValidation(validationConfig)
 profileForm.addEventListener('submit', editProfile)
 addForm.addEventListener('submit', addCard)
 avatarForm.addEventListener('submit', editAvatar)
+popups.forEach(popup =>
+	popup.addEventListener('mousedown', closePopupByOverlay)
+)

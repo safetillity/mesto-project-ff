@@ -5,7 +5,12 @@ import {
 	getUserInfo,
 } from '../components/api.js'
 
-export function createCard(cardContent, removeCard, openImagePopup, likeCard) {
+export function createCard({
+	cardContent,
+	removeCard,
+	openImagePopup,
+	likeCard,
+}) {
 	const cardTemplate = document.querySelector('#card-template').content
 	const cardElement = cardTemplate.cloneNode(true)
 	const cardImage = cardElement.querySelector('.card__image')
@@ -27,39 +32,33 @@ export function createCard(cardContent, removeCard, openImagePopup, likeCard) {
 
 		if (userInfo._id === cardContent.owner._id) {
 			cardDeleteButton.addEventListener('click', event =>
-				removeCard(event, cardContent)
+				removeCard(event, userInfo, cardContent)
 			)
 		} else {
-			cardDeleteButton.style.display = 'none'
+			cardDeleteButton.remove()
 		}
 	})
 
 	cardImage.addEventListener('click', () => openImagePopup(cardContent))
 
-	likeButton.addEventListener('click', event =>
-		likeCard(event, cardContent._id)
+	likeButton.addEventListener('click', () =>
+		likeCard(cardContent._id, likeButton, likeQuantity)
 	)
 
 	return cardElement
 }
 
-export function removeCard(event, cardContent) {
-	getUserInfo().then(userInfo => {
-		if (cardContent.owner._id === userInfo._id) {
-			const card = event.target.closest('.card')
-			deleteCard(cardContent._id)
-				.then(() => {
-					card.remove()
-				})
-				.catch(error => console.error(`Ошибка удаления карточки: ${error}`))
-		} else {
-			console.error('Это не ваша карточка, вы не можете ее удалить')
-		}
-	})
+export function removeCard(event, userInfo, cardContent) {
+	if (cardContent.owner._id === userInfo._id) {
+		const card = event.target.closest('.card')
+		deleteCard(cardContent._id)
+		card.remove()
+	} else {
+		console.error('Это не ваша карточка, вы не можете ее удалить')
+	}
 }
 
-export function likeCard(event, cardID) {
-	const likeButton = event.target
+export function likeCard(cardID, likeButton, likeQuantity) {
 	const toggleLike = likeButton.classList.contains(
 		'card__like-button_is-active'
 	)
@@ -69,9 +68,6 @@ export function likeCard(event, cardID) {
 	toggleLike(cardID)
 		.then(updatedCard => {
 			likeButton.classList.toggle('card__like-button_is-active')
-			const likeQuantity = likeButton
-				.closest('.card')
-				.querySelector('.card__like-quantity')
 			likeQuantity.textContent = updatedCard.likes.length
 		})
 		.catch(error => console.error(`Ошибка обработки лайка: ${error}`))

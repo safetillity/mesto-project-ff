@@ -6,18 +6,23 @@ const config = {
 	},
 }
 
+function getResponseData(res) {
+	if (!res.ok) {
+		return Promise.reject(`Ошибка: ${res.status}`)
+	}
+	return res.json()
+}
+
 export function getUserInfo() {
 	return fetch(`${config.baseUrl}/users/me`, { headers: config.headers }).then(
-		res => (res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`))
+		res => getResponseData(res)
 	)
 }
 
 export function getCards() {
 	return fetch(`${config.baseUrl}/cards`, {
 		headers: config.headers,
-	}).then(res =>
-		res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`)
-	)
+	}).then(res => getResponseData(res))
 }
 
 export function patchProfile(name, about) {
@@ -28,7 +33,7 @@ export function patchProfile(name, about) {
 			name: name,
 			about: about,
 		}),
-	})
+	}).then(res => getResponseData(res))
 }
 
 export function postCards(name, link) {
@@ -39,36 +44,28 @@ export function postCards(name, link) {
 			name: name,
 			link: link,
 		}),
-	}).then(res =>
-		res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`)
-	)
+	}).then(res => getResponseData(res))
 }
 
 export function deleteCard(cardID) {
 	return fetch(`${config.baseUrl}/cards/${cardID}`, {
 		method: 'DELETE',
 		headers: config.headers,
-	}).then(res =>
-		res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`)
-	)
+	}).then(res => getResponseData(res))
 }
 
 export function putLike(cardID) {
 	return fetch(`${config.baseUrl}/cards/likes/${cardID}`, {
 		method: 'PUT',
 		headers: config.headers,
-	}).then(res =>
-		res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`)
-	)
+	}).then(res => getResponseData(res))
 }
 
 export function deleteLike(cardID) {
 	return fetch(`${config.baseUrl}/cards/likes/${cardID}`, {
 		method: 'DELETE',
 		headers: config.headers,
-	}).then(res =>
-		res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`)
-	)
+	}).then(res => getResponseData(res))
 }
 
 export function patchAvatar(avatar) {
@@ -78,15 +75,6 @@ export function patchAvatar(avatar) {
 		body: JSON.stringify({
 			avatar: avatar,
 		}),
-	}).then(res =>
-		res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`)
-	)
+	}).then(res => getResponseData(res))
 }
 
-export function renderLoading(isLoading, submitButton) {
-	if (isLoading) {
-		submitButton.textContent = 'Сохранение...'
-	} else {
-		submitButton.textContent = 'Cохранить'
-	}
-}
