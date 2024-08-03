@@ -1,12 +1,8 @@
-import {
-	deleteCard,
-	putLike,
-	deleteLike,
-	getUserInfo,
-} from '../components/api.js'
+import { deleteCard, putLike, deleteLike } from '../components/api.js'
 
 export function createCard({
 	cardContent,
+	userInfo,
 	removeCard,
 	openImagePopup,
 	likeCard,
@@ -24,20 +20,18 @@ export function createCard({
 	cardTitle.textContent = cardContent.name
 	likeQuantity.textContent = cardContent.likes.length
 
-	getUserInfo().then(userInfo => {
-		const userLiked = cardContent.likes.some(like => like._id === userInfo._id)
-		if (userLiked) {
-			likeButton.classList.add('card__like-button_is-active')
-		}
+	const userLiked = cardContent.likes.some(like => like._id === userInfo._id)
+	if (userLiked) {
+		likeButton.classList.add('card__like-button_is-active')
+	}
 
-		if (userInfo._id === cardContent.owner._id) {
-			cardDeleteButton.addEventListener('click', event =>
-				removeCard(event, userInfo, cardContent)
-			)
-		} else {
-			cardDeleteButton.remove()
-		}
-	})
+	if (userInfo._id === cardContent.owner._id) {
+		cardDeleteButton.addEventListener('click', event =>
+			removeCard(event, userInfo, cardContent)
+		)
+	} else {
+		cardDeleteButton.remove()
+	}
 
 	cardImage.addEventListener('click', () => openImagePopup(cardContent))
 
@@ -52,7 +46,10 @@ export function removeCard(event, userInfo, cardContent) {
 	if (cardContent.owner._id === userInfo._id) {
 		const card = event.target.closest('.card')
 		deleteCard(cardContent._id)
-		card.remove()
+			.then(() => {
+				card.remove()
+			})
+			.catch(error => console.error(`Ошибка удаления карточки: ${error}`))
 	} else {
 		console.error('Это не ваша карточка, вы не можете ее удалить')
 	}

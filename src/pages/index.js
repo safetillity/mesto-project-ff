@@ -46,15 +46,19 @@ const avatarForm = popupAvatar.querySelector('.popup__form')
 const avatarUrlInput = avatarForm.querySelector('.popup__input_type_url')
 const popups = document.querySelectorAll('.popup')
 
+let userInfo
+
 Promise.all([getUserInfo(), getCards()])
-	.then(([userInfo, cardList]) => {
+	.then(([profileData, cardList]) => {
+		userInfo = profileData
 		profileTitle.textContent = userInfo.name
 		profileDescription.textContent = userInfo.about
-		profileAvatar.style.backgroundImage = `url(\\${userInfo.avatar})`
+		profileAvatar.style.backgroundImage = `url(${userInfo.avatar})`
 
 		cardList.forEach(cardContent => {
 			const cardElement = createCard({
 				cardContent,
+				userInfo,
 				removeCard,
 				openImagePopup,
 				likeCard,
@@ -62,7 +66,7 @@ Promise.all([getUserInfo(), getCards()])
 			placesList.append(cardElement)
 		})
 	})
-	.catch(error => console.error(`ошибка при загрузки данных : ${error}`))
+	.catch(error => console.error(`Ошибка при загрузке данных: ${error}`))
 
 function openImagePopup(cardContent) {
 	popupImagePicture.src = cardContent.link
@@ -75,57 +79,57 @@ function renderLoading(isLoading, submitButton) {
 	if (isLoading) {
 		submitButton.textContent = 'Сохранение...'
 	} else {
-		submitButton.textContent = 'Cохранить'
+		submitButton.textContent = 'Сохранить'
 	}
 }
 
 function editProfile(event) {
+	event.preventDefault()
 	const submitButton = event.target.querySelector('.popup__button')
 	renderLoading(true, submitButton)
-	profileTitle.textContent = nameInput.value
-	profileDescription.textContent = jobInput.value
-	patchProfile(profileTitle.textContent, profileDescription.textContent)
-		.then(() => {
+	patchProfile(nameInput.value, jobInput.value)
+		.then(updatedUserInfo => {
+			userInfo = updatedUserInfo
+			profileTitle.textContent = userInfo.name
+			profileDescription.textContent = userInfo.about
 			closePopup(popupEdit)
 		})
-		.catch(error =>
-			console.error(`ошибка при загрузки данных пользователя : ${error}`)
-		)
+		.catch(error => console.error(`Ошибка при обновлении профиля: ${error}`))
 		.finally(() => renderLoading(false, submitButton))
 }
+
 function addCard(event) {
+	event.preventDefault()
 	const submitButton = event.target.querySelector('.popup__button')
 	renderLoading(true, submitButton)
 	postCards(cardNameInput.value, cardUrlInput.value)
 		.then(cardContent => {
 			const cardElement = createCard({
 				cardContent,
+				userInfo,
 				removeCard,
 				openImagePopup,
 				likeCard,
 			})
 			placesList.prepend(cardElement)
-
 			closePopup(popupNewCard)
 			clearValidation(addForm, validationConfig)
 		})
-		.catch(error =>
-			console.error(`ошибка при загрузки данных пользователя : ${error}`)
-		)
+		.catch(error => console.error(`Ошибка при добавлении карточки: ${error}`))
 		.finally(() => renderLoading(false, submitButton))
 }
 
 function editAvatar(event) {
+	event.preventDefault()
 	const submitButton = event.target.querySelector('.popup__button')
 	renderLoading(true, submitButton)
 	patchAvatar(avatarUrlInput.value)
-		.then(userInfo => {
-			profileAvatar.style.backgroundImage = `url(\\${userInfo.avatar})`
+		.then(updatedUserInfo => {
+			userInfo = updatedUserInfo
+			profileAvatar.style.backgroundImage = `url(${userInfo.avatar})`
 			closePopup(popupAvatar)
 		})
-		.catch(error =>
-			console.error(`ошибка при загрузки данных пользователя : ${error}`)
-		)
+		.catch(error => console.error(`Ошибка при обновлении аватара: ${error}`))
 		.finally(() => renderLoading(false, submitButton))
 }
 

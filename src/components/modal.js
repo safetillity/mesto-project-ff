@@ -5,7 +5,6 @@ export function openPopup(popup) {
 export function closePopup(popup) {
 	popup.classList.remove('popup_is-opened')
 	document.removeEventListener('keydown', closePopupByEsc)
-	
 }
 
 export const closePopupByEsc = evt => {
@@ -18,7 +17,7 @@ export const closePopupByEsc = evt => {
 }
 
 export const closePopupByOverlay = evt => {
-	  const openedPopup = document.querySelector('.popup_is-opened')
+	const openedPopup = document.querySelector('.popup_is-opened')
 	if (evt.target.classList.contains('popup')) {
 		closePopup(openedPopup)
 	}

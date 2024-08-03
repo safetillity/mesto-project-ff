@@ -77,4 +77,3 @@ export function patchAvatar(avatar) {
 		}),
 	}).then(res => getResponseData(res))
 }
-
