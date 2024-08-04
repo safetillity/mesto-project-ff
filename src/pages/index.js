@@ -113,10 +113,11 @@ function addCard(event) {
 			})
 			placesList.prepend(cardElement)
 			closePopup(popupNewCard)
-			clearValidation(addForm, validationConfig)
+			addForm.reset()
 		})
 		.catch(error => console.error(`Ошибка при добавлении карточки: ${error}`))
 		.finally(() => renderLoading(false, submitButton))
+	clearValidation(addForm, validationConfig)
 }
 
 function editAvatar(event) {

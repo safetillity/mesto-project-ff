@@ -1,7 +1,7 @@
 const showInputError = (inputElement, errorMessage, validationConfig) => {
 	const formElement = inputElement.closest(validationConfig.formSelector)
 	const errorElement = formElement.querySelector(
-		`.popup__input_type_error-${inputElement.name}`
+		`.${validationConfig.inputErrorClass}-${inputElement.name}`
 	)
 	inputElement.classList.add(validationConfig.inputErrorClass)
 	errorElement.textContent = errorMessage
@@ -10,10 +10,11 @@ const showInputError = (inputElement, errorMessage, validationConfig) => {
 const hideInputError = (inputElement, validationConfig) => {
 	const formElement = inputElement.closest(validationConfig.formSelector)
 	const errorElement = formElement.querySelector(
-		`.popup__input_type_error-${inputElement.name}`
+		`.${validationConfig.inputErrorClass}-${inputElement.name}`
 	)
 	inputElement.classList.remove(validationConfig.inputErrorClass)
 	errorElement.textContent = ''
+	inputElement.setCustomValidity('')
 }
 
 const checkInputValidity = (inputElement, validationConfig) => {
@@ -25,7 +26,7 @@ const checkInputValidity = (inputElement, validationConfig) => {
 	if (inputElement.validity.patternMismatch) {
 		inputElement.setCustomValidity(inputElement.dataset.errorMessage)
 	} else {
-		inputElement.setCustomValidity('')
+		hideInputError(inputElement, validationConfig)
 	}
 
 	if (!inputElement.validity.valid) {
