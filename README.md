@@ -3,7 +3,6 @@
 ![ezgif-6-fa22832199](https://github.com/user-attachments/assets/1b6c60db-4ab6-48f3-9176-e19a771ae712)
 
 <img width="1440" alt="image" src="https://github.com/user-attachments/assets/3a035627-7577-46a5-b42f-b91bff13c721" />
-<img width="1440" alt="image" src="https://github.com/user-attachments/assets/3a035627-7577-46a5-b42f-b91bff13c721" />
 
 
 ---
